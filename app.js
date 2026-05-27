@@ -63,12 +63,9 @@ const loadingOverlay     = document.getElementById("loading-overlay");
 const loadingLabel       = document.getElementById("loading-label");
 
 // ── LOADING HELPERS ──────────────────────────────────────────────────────────
-if (file) {
-  showLoading("Reading your deck…");
-  deckText = await extractPdfText(file);
-  updateLoading("Running investor screen with Claude…");
-} else {
-  showLoading("Running investor screen with Claude…");
+function showLoading(message = "Analyzing your deck…") {
+  loadingLabel.textContent = message;
+  loadingOverlay.classList.remove("hidden");
 }
 
 function updateLoading(message) {
@@ -248,9 +245,10 @@ form.addEventListener("submit", async (event) => {
     if (file) {
       showLoading("Reading your deck…");
       deckText = await extractPdfText(file);
+      updateLoading("Running investor screen with Claude…");
+    } else {
+      showLoading("Running investor screen with Claude…");
     }
-
-    updateLoading("Running investor screen with Claude…");
     const report = await analyzeWithClaude(deckText, startupName, founderNotes, apiKey);
     report.startupName = startupName;
 
