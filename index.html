@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Startup Screener</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+
+    <!-- ACCESS GATE OVERLAY -->
+    <div id="access-gate" class="gate-overlay">
+      <div class="gate-card">
+        <p class="eyebrow">Startup Screener</p>
+        <h2>Enter your access code</h2>
+        <p class="gate-sub">Purchase access at <a href="https://venturereadymvp.gumroad.com" target="_blank">venturereadymvp.gumroad.com</a> to get your code.</p>
+        <div class="gate-field">
+          <input id="access-code-input" type="text" placeholder="XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" />
+          <button id="access-code-submit" class="button button--primary">Unlock</button>
+        </div>
+        <p class="gate-error hidden" id="gate-error">Invalid code. Check your Gumroad receipt and try again.</p>
+      </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+      <div class="loading-card">
+        <div class="loading-spinner"></div>
+        <p class="loading-label" id="loading-label">Reading your deck…</p>
+      </div>
+    </div>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero__copy">
+          <p class="eyebrow">Startup Screener</p>
+          <h1>Upload a pitch deck. Get an investor-style validation report.</h1>
+          <p class="hero__lede">
+            Screen your idea across market research, SWOT, defensibility,
+            traction, and business model strength with a detailed scorecard and
+            concrete next steps.
+          </p>
+          <div class="hero__actions">
+            <a href="#workspace" class="button button--primary">Start screening</a>
+            <a href="#how-it-works" class="button button--ghost">How it works</a>
+          </div>
+        </div>
+        <div class="hero__panel">
+          <div class="signal">
+            <span class="signal__label">What gets scored</span>
+            <ul class="signal__list">
+              <li>Problem clarity and urgency</li>
+              <li>Market size and evidence</li>
+              <li>Product moat and defensibility</li>
+              <li>Go-to-market and traction quality</li>
+              <li>Revenue logic and business durability</li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="workspace" id="workspace">
+          <div class="section-heading">
+            <p class="eyebrow">Analyzer</p>
+            <h2>Turn a deck into a verdict</h2>
+            <p>
+              Upload a PDF pitch deck, then add any extra context you want the
+              screen to consider.
+            </p>
+          </div>
+
+          <div class="workspace__grid">
+            <form id="screening-form" class="composer">
+              <label class="upload-zone" for="deck">
+                <input id="deck" name="deck" type="file" accept=".pdf" />
+                <span class="upload-zone__title">Drop a PDF pitch deck here</span>
+                <span class="upload-zone__meta"
+                  >or click to choose a file from your computer</span
+                >
+                <span class="upload-zone__filename" id="file-name"
+                  >No file selected</span
+                >
+              </label>
+
+              <label class="field">
+                <span>Anthropic API key</span>
+                <input
+                  id="api-key"
+                  name="api-key"
+                  type="password"
+                  placeholder="sk-ant-…"
+                  autocomplete="off"
+                />
+                <span class="field-hint">Your key is never stored or sent anywhere except directly to Anthropic.</span>
+              </label>
+
+              <label class="field">
+                <span>Startup name</span>
+                <input
+                  id="startup-name"
+                  name="startup-name"
+                  type="text"
+                  placeholder="Prime Health, Atlas Robotics, StudioFlow..."
+                />
+              </label>
+
+              <label class="field">
+                <span>Founder notes</span>
+                <textarea
+                  id="founder-notes"
+                  name="founder-notes"
+                  rows="7"
+                  placeholder="Add traction numbers, target customer, pricing, launch stage, or anything the deck under-explains."
+                ></textarea>
+              </label>
+
+              <div class="composer__actions">
+                <button type="submit" class="button button--primary">
+                  Generate report
+                </button>
+                <button
+                  type="button"
+                  class="button button--ghost"
+                  id="load-demo"
+                >
+                  Load demo analysis
+                </button>
+              </div>
+
+              <p class="composer__hint">
+                PDF text extraction runs in your browser using `pdf.js`. If a
+                deck is image-heavy, founder notes help the screen score it more
+                accurately.
+              </p>
+            </form>
+
+            <section class="report" aria-live="polite">
+              <div class="report__empty" id="empty-state">
+                <p class="eyebrow">Waiting for input</p>
+                <h3>Your screening report will appear here.</h3>
+                <p>
+                  We'll evaluate idea quality, risks, and investor readiness
+                  once a deck is uploaded.
+                </p>
+              </div>
+
+              <div class="report__content hidden" id="report-content">
+                <div class="report__header">
+                  <div>
+                    <p class="eyebrow">Screening result</p>
+                    <h3 id="report-startup">Startup</h3>
+                    <p id="report-summary"></p>
+                  </div>
+                  <div class="score-orb">
+                    <span id="overall-score">0</span>
+                    <small>Overall score</small>
+                  </div>
+                </div>
+
+                <div class="report__verdict" id="verdict-chip"></div>
+
+                <section class="kpi-grid" id="kpi-grid"></section>
+
+                <section class="insight-grid">
+                  <article>
+                    <h4>Market research</h4>
+                    <p id="market-text"></p>
+                  </article>
+                  <article>
+                    <h4>SWOT analysis</h4>
+                    <div id="swot-grid" class="swot-grid"></div>
+                  </article>
+                  <article>
+                    <h4>Defensibility</h4>
+                    <p id="defensibility-text"></p>
+                  </article>
+                  <article>
+                    <h4>Traction</h4>
+                    <p id="traction-text"></p>
+                  </article>
+                  <article>
+                    <h4>Business model</h4>
+                    <p id="business-model-text"></p>
+                  </article>
+                  <article>
+                    <h4>Top recommendations</h4>
+                    <ul id="recommendations-list" class="recommendations"></ul>
+                  </article>
+                </section>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="how-it-works" id="how-it-works">
+          <div class="section-heading">
+            <p class="eyebrow">Method</p>
+            <h2>Built like a first-pass investor screen</h2>
+          </div>
+          <div class="steps">
+            <article>
+              <span>01</span>
+              <h3>Extract</h3>
+              <p>
+                The app reads deck text in-browser, combines it with your notes,
+                and identifies the startup's core claims.
+              </p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Score</h3>
+              <p>
+                Each category gets a weighted score based on evidence, clarity,
+                and how convincing the business case appears.
+              </p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Advise</h3>
+              <p>
+                The report flags what is compelling, what is fragile, and what
+                would strengthen the deck before the next meeting.
+              </p>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
