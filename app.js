@@ -63,9 +63,12 @@ const loadingOverlay     = document.getElementById("loading-overlay");
 const loadingLabel       = document.getElementById("loading-label");
 
 // ── LOADING HELPERS ──────────────────────────────────────────────────────────
-function showLoading(message = "Analyzing your deck…") {
-  loadingLabel.textContent = message;
-  loadingOverlay.classList.remove("hidden");
+if (file) {
+  showLoading("Reading your deck…");
+  deckText = await extractPdfText(file);
+  updateLoading("Running investor screen with Claude…");
+} else {
+  showLoading("Running investor screen with Claude…");
 }
 
 function updateLoading(message) {
